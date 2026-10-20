@@ -1,0 +1,10 @@
+name: thijmen-infra
+description: Cloudflare account and zone config for thijmen.cloud (Access, rules). The Worker itself lives in Thijmen/thijmen-dev's wrangler.jsonc.
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+# Self-managed state in R2. No Pulumi Cloud. Credentials come from
+# AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY (an R2 token for this bucket).
+backend:
+  url: s3://pulumi-state?endpoint=7dac805f31c2d6d9d0b73499d61513d2.r2.cloudflarestorage.com&region=auto&s3ForcePathStyle=true

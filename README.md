@@ -5,7 +5,7 @@ Zero Trust lists, zone rules. Pulumi (TypeScript) with no Pulumi Cloud: state in
 an R2 bucket, secrets encrypted with a passphrase.
 
 The Worker and its bindings (D1, R2, Durable Objects, cron, cache) are **not**
-here. They stay in [Thijmen/thijmen.dev](https://github.com/Thijmen/thijmen.dev)'s
+here. They stay in [Thijmen/thijmen-dev](https://github.com/Thijmen/thijmen-dev)'s
 `wrangler.jsonc`, which Workers Builds deploys. Two tools managing one Worker
 would overwrite each other.
 
