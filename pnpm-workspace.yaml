@@ -2,7 +2,7 @@
 allowBuilds:
   protobufjs: false
 
-# Supply-chain hardening, same as Thijmen/thijmen.dev: one-day cooldown on new
+# Supply-chain hardening, same as Thijmen/thijmen-dev: one-day cooldown on new
 # releases and no non-registry transitive sources.
 minimumReleaseAge: 1440
 blockExoticSubdeps: true
