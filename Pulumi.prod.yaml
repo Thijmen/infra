@@ -1,6 +1,6 @@
 # Not secret: IDs and hostnames. Secrets come from the environment (see .env.example).
-# `pulumi stack init prod --secrets-provider passphrase` adds an encryptionsalt line here.
 config:
   thijmen-infra:accountId: 7dac805f31c2d6d9d0b73499d61513d2
   thijmen-infra:zone: thijmen.cloud
   thijmen-infra:siteHost: www.thijmen.cloud
+encryptionsalt: v1:4QEAwZOO1zY=:v1:prb/nX/dGechogAX:9+JE0B5lZTz+7wEJazR4oCn0rQq9NQ==
