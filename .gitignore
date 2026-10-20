@@ -1,0 +1,6 @@
+node_modules/
+bin/
+.env
+.env.*
+!.env.example
+.pulumi/
