@@ -37,11 +37,13 @@ jobs:
       - name: Check secrets
         run: |
           missing=()
-          for name in CLOUDFLARE_API_TOKEN AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY PULUMI_CONFIG_PASSPHRASE TRUSTED_IPS; do
-            [ -n "${!name}" ] || missing+=("$name")
-          done
+          [ -n "$CLOUDFLARE_API_TOKEN" ]     || missing+=(CLOUDFLARE_API_TOKEN)
+          [ -n "$AWS_ACCESS_KEY_ID" ]        || missing+=(R2_ACCESS_KEY_ID)
+          [ -n "$AWS_SECRET_ACCESS_KEY" ]    || missing+=(R2_SECRET_ACCESS_KEY)
+          [ -n "$PULUMI_CONFIG_PASSPHRASE" ] || missing+=(PULUMI_CONFIG_PASSPHRASE)
+          [ -n "$TRUSTED_IPS" ]              || missing+=(TRUSTED_IPS)
           if [ ${#missing[@]} -gt 0 ]; then
-            echo "::error::Missing repo secrets (env names; the R2 keys are R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY): ${missing[*]}. See README → First-time setup."
+            echo "::error::Missing repo secrets: ${missing[*]}. See README → First-time setup."
             exit 1
           fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -70,11 +72,13 @@ jobs:
       - name: Check secrets
         run: |
           missing=()
-          for name in CLOUDFLARE_API_TOKEN AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY PULUMI_CONFIG_PASSPHRASE TRUSTED_IPS; do
-            [ -n "${!name}" ] || missing+=("$name")
-          done
+          [ -n "$CLOUDFLARE_API_TOKEN" ]     || missing+=(CLOUDFLARE_API_TOKEN)
+          [ -n "$AWS_ACCESS_KEY_ID" ]        || missing+=(R2_ACCESS_KEY_ID)
+          [ -n "$AWS_SECRET_ACCESS_KEY" ]    || missing+=(R2_SECRET_ACCESS_KEY)
+          [ -n "$PULUMI_CONFIG_PASSPHRASE" ] || missing+=(PULUMI_CONFIG_PASSPHRASE)
+          [ -n "$TRUSTED_IPS" ]              || missing+=(TRUSTED_IPS)
           if [ ${#missing[@]} -gt 0 ]; then
-            echo "::error::Missing repo secrets (env names; the R2 keys are R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY): ${missing[*]}. See README → First-time setup."
+            echo "::error::Missing repo secrets: ${missing[*]}. See README → First-time setup."
             exit 1
           fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
