@@ -50,5 +50,6 @@ fi
 echo; echo "# DNS records (not managed yet; adopt when you want them in code)"
 api "/zones/$ZONE_ID/dns_records?per_page=500" | jq -r '.result[] | [.id, .type, .name] | @tsv' |
 	while IFS=$'\t' read -r id type name; do
-		echo "pulumi import cloudflare:index/dnsRecord:DnsRecord $(echo "$type-$name" | slug) '$ZONE_ID/$id'"
+		# Several records can share a type and name (MX, round-robin A): add part of the id.
+		echo "pulumi import cloudflare:index/dnsRecord:DnsRecord $(echo "$type-$name" | slug)-${id:0:6} '$ZONE_ID/$id'"
 	done
