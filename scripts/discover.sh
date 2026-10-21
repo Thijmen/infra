@@ -47,6 +47,19 @@ else
 	echo "#   none yet: src/headers.ts will create it"
 fi
 
+WAF_ZONES="${WAF_ZONES:-cloudcrafter.app filamentradar.app thijmen.cloud thijmen.dev thijmen.nu thijmenstavenuiter.nl whisperingwings.gg}"
+for ZONE in $WAF_ZONES; do
+	WAF_ZONE_ID=$(api "/zones?name=$ZONE" | jq -r '.result[0].id')
+	echo; echo "# Zone $ZONE ($WAF_ZONE_ID): managed WAF entrypoint ruleset"
+	if rs=$(api "/zones/$WAF_ZONE_ID/rulesets/phases/http_request_firewall_managed/entrypoint" 2>/dev/null); then
+		id=$(echo "$rs" | jq -r '.result.id')
+		echo "#   exists with $(echo "$rs" | jq '.result.rules | length') rule(s): import it before the first \`pulumi up\`"
+		echo "pulumi import cloudflare:index/ruleset:Ruleset managed-waf-$(echo "$ZONE" | slug) 'zones/$WAF_ZONE_ID/$id'"
+	else
+		echo "#   none yet: src/waf.ts will create it"
+	fi
+done
+
 echo; echo "# DNS records (not managed yet; adopt when you want them in code)"
 api "/zones/$ZONE_ID/dns_records?per_page=500" | jq -r '.result[] | [.id, .type, .name] | @tsv' |
 	while IFS=$'\t' read -r id type name; do

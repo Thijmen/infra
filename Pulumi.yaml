@@ -1,5 +1,5 @@
 name: thijmen-infra
-description: Cloudflare account and zone config for thijmen.cloud (Access, rules). The Worker itself lives in Thijmen/thijmen-dev's wrangler.jsonc.
+description: Cloudflare account and zone config for the personal zones (Access, WAF, rules). The Worker itself lives in Thijmen/thijmen-dev's wrangler.jsonc.
 runtime:
   name: nodejs
   options:
