@@ -1,8 +1,9 @@
 # infra
 
-Cloudflare config for thijmen.cloud as code: Access applications and policies,
-Zero Trust lists, zone rules. Pulumi (TypeScript) with no Pulumi Cloud: state in
-an R2 bucket, secrets encrypted with a passphrase.
+Cloudflare config as code: Access applications and policies, Zero Trust lists,
+zone rules, and WAF managed rulesets for the zones in `wafZones`. Pulumi
+(TypeScript) with no Pulumi Cloud: state in an R2 bucket, secrets encrypted with
+a passphrase.
 
 The Worker and its bindings (D1, R2, Durable Objects, cron, cache) are **not**
 here. They stay in [Thijmen/thijmen-dev](https://github.com/Thijmen/thijmen-dev)'s
@@ -15,6 +16,7 @@ would overwrite each other.
 | --- | --- |
 | `src/access.ts` | `trusted-ips` list, a Bypass policy for it, and an Access app covering only EmDash's MCP + OAuth paths. The site and admin stay behind the existing Access app. |
 | `src/headers.ts` | Zone response-header rule: HSTS (5 min to start) and a report-only Content-Security-Policy on `www.thijmen.cloud`. |
+| `src/waf.ts` | Managed WAF entrypoint ruleset for every zone in `wafZones`, executing the Cloudflare Managed Free Ruleset at version `latest`. |
 
 ## Secrets stay out of git
 
@@ -22,7 +24,7 @@ This repo is public. Anything private comes from the environment:
 
 | Variable | What |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Provider token: Access Apps and Policies Edit, Zero Trust Edit, Zone Read, Transform Rules Edit |
+| `CLOUDFLARE_API_TOKEN` | Provider token: Access Apps and Policies Edit, Zero Trust Edit, Zone Read, Transform Rules Edit, Zone WAF Edit (on every zone in `wafZones`) |
 | `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | R2 token for the `pulumi-state` bucket only (locally as `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`) |
 | `PULUMI_CONFIG_PASSPHRASE` | Encrypts secret values in the state. Keep a copy in your password manager. |
 | `TRUSTED_IPS` | Comma-separated CIDRs for the MCP bypass |
