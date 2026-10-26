@@ -25,6 +25,7 @@ env:
   AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
   PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
   TRUSTED_IPS: ${{ secrets.TRUSTED_IPS }}
+  T3_ACCESS_EMAILS: ${{ secrets.T3_ACCESS_EMAILS }}
 
 jobs:
   preview:
@@ -42,6 +43,7 @@ jobs:
           [ -n "$AWS_SECRET_ACCESS_KEY" ]    || missing+=(R2_SECRET_ACCESS_KEY)
           [ -n "$PULUMI_CONFIG_PASSPHRASE" ] || missing+=(PULUMI_CONFIG_PASSPHRASE)
           [ -n "$TRUSTED_IPS" ]              || missing+=(TRUSTED_IPS)
+          [ -n "$T3_ACCESS_EMAILS" ]         || missing+=(T3_ACCESS_EMAILS)
           if [ ${#missing[@]} -gt 0 ]; then
             echo "::error::Missing repo secrets: ${missing[*]}. See README → First-time setup."
             exit 1
@@ -77,6 +79,7 @@ jobs:
           [ -n "$AWS_SECRET_ACCESS_KEY" ]    || missing+=(R2_SECRET_ACCESS_KEY)
           [ -n "$PULUMI_CONFIG_PASSPHRASE" ] || missing+=(PULUMI_CONFIG_PASSPHRASE)
           [ -n "$TRUSTED_IPS" ]              || missing+=(TRUSTED_IPS)
+          [ -n "$T3_ACCESS_EMAILS" ]         || missing+=(T3_ACCESS_EMAILS)
           if [ ${#missing[@]} -gt 0 ]; then
             echo "::error::Missing repo secrets: ${missing[*]}. See README → First-time setup."
             exit 1
