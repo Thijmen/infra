@@ -3,6 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { emdashMcpAccess } from "./src/access";
 import { securityHeaders } from "./src/headers";
+import { apexRedirect } from "./src/redirect";
 import { t3CodeTunnel } from "./src/tunnel";
 import { managedWaf } from "./src/waf";
 
@@ -14,6 +15,7 @@ const zone = cloudflare.getZoneOutput({ filter: { name: config.require("zone") }
 
 const mcp = emdashMcpAccess({ accountId, siteHost });
 securityHeaders({ zoneId: zone.zoneId, siteHost });
+apexRedirect({ zoneId: zone.zoneId, siteHost });
 
 const t3 = t3CodeTunnel({
 	accountId,
