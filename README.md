@@ -26,7 +26,7 @@ This repo is public. Anything private comes from the environment:
 
 | Variable | What |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Provider token: Access Apps and Policies Edit, Access Organizations Read, Cloudflare Tunnel Edit, Zero Trust Edit, Zone Read, DNS Edit (`thijmen.cloud`), Transform Rules Edit, Zone WAF Edit (on every zone in `wafZones`) |
+| `CLOUDFLARE_API_TOKEN` | Provider token: Access Apps and Policies Edit, Access Organizations Read, Cloudflare Tunnel Edit, Zero Trust Edit, Zone Read, DNS Edit (`thijmen.cloud`), Transform Rules Edit, Single Redirect Edit (`thijmen.cloud`), Zone WAF Edit (on every zone in `wafZones`) |
 | `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | R2 token for the `pulumi-state` bucket only (locally as `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`) |
 | `PULUMI_CONFIG_PASSPHRASE` | Encrypts secret values in the state. Keep a copy in your password manager. |
 | `TRUSTED_IPS` | Comma-separated CIDRs for the MCP bypass |
