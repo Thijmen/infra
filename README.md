@@ -16,6 +16,7 @@ would overwrite each other.
 | --- | --- |
 | `src/access.ts` | `trusted-ips` list, a Bypass policy for it, and an Access app covering only EmDash's MCP + OAuth paths. The site and admin stay behind the existing Access app. |
 | `src/headers.ts` | Zone response-header rule: HSTS (5 min to start) and a report-only Content-Security-Policy on `www.thijmen.cloud`. |
+| `src/redirect.ts` | Zone Single Redirect: `thijmen.cloud` → `www.thijmen.cloud`, 301, keeping path and query string. |
 | `src/tunnel.ts` | Remotely managed Cloudflare Tunnel `t3-code` publishing T3 Code (`t3Origin`, on the laptop) at `t3Host`, its proxied CNAME, and an Access app allowing only `T3_ACCESS_EMAILS`. cloudflared also rejects requests without that app's Access JWT. |
 | `src/waf.ts` | Managed WAF entrypoint ruleset for every zone in `wafZones`, executing the Cloudflare Managed Free Ruleset at version `latest`. |
 
