@@ -17,11 +17,22 @@ const mcp = emdashMcpAccess({ accountId, siteHost });
 securityHeaders({ zoneId: zone.zoneId, siteHost });
 apexRedirect({ zoneId: zone.zoneId, siteHost });
 
-const t3 = t3CodeTunnel({
-	accountId,
-	zoneId: zone.zoneId,
-	host: config.require("t3Host"),
-	origin: config.require("t3Origin"),
+interface T3TunnelConfig {
+	/** Pulumi resource and tunnel name, e.g. t3-code. */
+	name: string;
+	/** Display name for the Access app and policy, e.g. "T3 Code". */
+	title: string;
+	/** Public hostname, e.g. t3.thijmen.cloud. */
+	host: string;
+	/** What cloudflared forwards to on the machine running it. */
+	origin: string;
+}
+
+const seen = new Set<string>();
+const tunnels = config.requireObject<T3TunnelConfig[]>("t3Tunnels").map((args) => {
+	if (seen.has(args.name)) throw new Error(`t3Tunnels: duplicate name "${args.name}"`);
+	seen.add(args.name);
+	return { args, resources: t3CodeTunnel({ accountId, zoneId: zone.zoneId, ...args }) };
 });
 
 const wafZones = config.requireObject<string[]>("wafZones");
@@ -32,6 +43,7 @@ for (const zoneName of wafZones) {
 
 export const zoneId = zone.zoneId;
 export const mcpAccessAppId = mcp.app.id;
-export const t3TunnelId = t3.tunnel.id;
-// cloudflared service install $(pulumi stack output t3TunnelToken --show-secrets)
-export const t3TunnelToken = t3.token;
+// cloudflared service install "$(pulumi stack output t3Tunnels --show-secrets --json | jq -r '.["t3-pc"].token')"
+export const t3Tunnels = pulumi.secret(
+	Object.fromEntries(tunnels.map(({ args, resources }) => [args.name, { host: args.host, id: resources.tunnel.id, token: resources.token }])),
+);
