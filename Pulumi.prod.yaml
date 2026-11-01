@@ -5,6 +5,8 @@ config:
   thijmen-infra:siteHost: www.thijmen.cloud
   thijmen-infra:t3Host: t3.thijmen.cloud
   thijmen-infra:t3Origin: http://localhost:3773
+  thijmen-infra:t3PcHost: t3-pc.thijmen.cloud
+  thijmen-infra:t3PcOrigin: http://localhost:3773
   thijmen-infra:wafZones:
     - cloudcrafter.app
     - filamentradar.app

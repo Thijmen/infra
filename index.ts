@@ -20,8 +20,19 @@ apexRedirect({ zoneId: zone.zoneId, siteHost });
 const t3 = t3CodeTunnel({
 	accountId,
 	zoneId: zone.zoneId,
+	name: "t3-code",
+	title: "T3 Code",
 	host: config.require("t3Host"),
 	origin: config.require("t3Origin"),
+});
+
+const t3Pc = t3CodeTunnel({
+	accountId,
+	zoneId: zone.zoneId,
+	name: "t3-pc",
+	title: "T3 Code (PC)",
+	host: config.require("t3PcHost"),
+	origin: config.require("t3PcOrigin"),
 });
 
 const wafZones = config.requireObject<string[]>("wafZones");
@@ -35,3 +46,6 @@ export const mcpAccessAppId = mcp.app.id;
 export const t3TunnelId = t3.tunnel.id;
 // cloudflared service install $(pulumi stack output t3TunnelToken --show-secrets)
 export const t3TunnelToken = t3.token;
+export const t3PcTunnelId = t3Pc.tunnel.id;
+// cloudflared service install $(pulumi stack output t3PcTunnelToken --show-secrets)
+export const t3PcTunnelToken = t3Pc.token;
