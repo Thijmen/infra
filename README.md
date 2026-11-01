@@ -17,7 +17,7 @@ would overwrite each other.
 | `src/access.ts` | `trusted-ips` list, a Bypass policy for it, and an Access app covering only EmDash's MCP + OAuth paths. The site and admin stay behind the existing Access app. |
 | `src/headers.ts` | Zone response-header rule: HSTS (5 min to start) and a report-only Content-Security-Policy on `www.thijmen.cloud`. |
 | `src/redirect.ts` | Zone Single Redirect: `thijmen.cloud` → `www.thijmen.cloud`, 301, keeping path and query string. |
-| `src/tunnel.ts` | Remotely managed Cloudflare Tunnels `t3-code` (laptop) and `t3-pc` (PC) publishing T3 Code (`t3Origin` / `t3PcOrigin`) at `t3Host` / `t3PcHost`, their proxied CNAMEs, and Access apps allowing only `T3_ACCESS_EMAILS`. cloudflared also rejects requests without that app's Access JWT. |
+| `src/tunnel.ts` | Remotely managed Cloudflare Tunnels from the `t3Tunnels` config list (currently `t3-code` on the laptop and `t3-pc` on the PC), each publishing T3 Code at its `host` → `origin`, with a proxied CNAME and an Access app allowing only `T3_ACCESS_EMAILS`. cloudflared also rejects requests without that app's Access JWT. |
 | `src/waf.ts` | Managed WAF entrypoint ruleset for every zone in `wafZones`, executing the Cloudflare Managed Free Ruleset at version `latest`. |
 
 ## Secrets stay out of git
@@ -79,19 +79,21 @@ EmDash then issues a token scoped to the permissions you pick.
 
 ## T3 Code on the laptop and PC
 
-Pulumi creates the tunnels and their routing; each machine only runs the
-connector. After the first `pulumi up` that includes `src/tunnel.ts`, on each
-machine:
+Each tunnel is one entry in the `t3Tunnels` list in `Pulumi.prod.yaml`
+(`name`, `title`, `host`, `origin`); adding another machine is one more
+entry. Pulumi creates the tunnels and their routing; each machine only runs
+the connector. After the first `pulumi up` that includes `src/tunnel.ts`, on
+each machine:
 
 ```bash
-cloudflared service install "$(pulumi stack output t3TunnelToken --show-secrets --stack prod)"   # laptop
-cloudflared service install "$(pulumi stack output t3PcTunnelToken --show-secrets --stack prod)" # PC
+cloudflared service install "$(pulumi stack output t3Tunnels --show-secrets --json --stack prod | jq -r '.["t3-code"].token')" # laptop
+cloudflared service install "$(pulumi stack output t3Tunnels --show-secrets --json --stack prod | jq -r '.["t3-pc"].token')"   # PC
 ```
 
-That installs a service that starts at login and connects to
-`https://t3.thijmen.cloud` (`t3Host`) or `https://t3-pc.thijmen.cloud`
-(`t3PcHost`), forwarding to `http://localhost:3773` (`t3Origin` /
-`t3PcOrigin`). Open the hostname, sign in through Access, done.
+That installs a service that starts at login and connects the tunnel to its
+`host` (`https://t3.thijmen.cloud`, `https://t3-pc.thijmen.cloud`), forwarding
+to its `origin` (`http://localhost:3773`). Open the hostname, sign in through
+Access, done.
 
 - Status: Zero Trust → Networks → Tunnels → `t3-code` / `t3-pc`, or `cloudflared tunnel info <name>`.
 - Restart (macOS): `launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared`.
@@ -99,7 +101,7 @@ That installs a service that starts at login and connects to
 - Change who gets in: update the `T3_ACCESS_EMAILS` secret and rerun the workflow.
 
 A token is a credential for its tunnel: don't paste it anywhere else. If one
-leaks, replace that tunnel and reinstall the service:
+leaks, replace that tunnel (substitute its name) and reinstall the service:
 
 ```bash
 pulumi up --stack prod --replace 'urn:pulumi:prod::thijmen-infra::cloudflare:index/zeroTrustTunnelCloudflared:ZeroTrustTunnelCloudflared::t3-code'
