@@ -3,8 +3,15 @@ config:
   thijmen-infra:accountId: 7dac805f31c2d6d9d0b73499d61513d2
   thijmen-infra:zone: thijmen.cloud
   thijmen-infra:siteHost: www.thijmen.cloud
-  thijmen-infra:t3Host: t3.thijmen.cloud
-  thijmen-infra:t3Origin: http://localhost:3773
+  thijmen-infra:t3Tunnels:
+    - name: t3-code
+      title: T3 Code
+      host: t3.thijmen.cloud
+      origin: http://localhost:3773
+    - name: t3-pc
+      title: T3 Code (PC)
+      host: t3-pc.thijmen.cloud
+      origin: http://localhost:3773
   thijmen-infra:apexRedirectHosts:
     - www.thijmen.cloud
     - www.thijmen.dev
