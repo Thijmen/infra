@@ -12,6 +12,9 @@ config:
       title: T3 Code (PC)
       host: t3-pc.thijmen.cloud
       origin: http://localhost:3773
+  thijmen-infra:apexRedirectHosts:
+    - www.thijmen.cloud
+    - www.thijmen.dev
   thijmen-infra:wafZones:
     - cloudcrafter.app
     - filamentradar.app
