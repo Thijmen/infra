@@ -47,14 +47,18 @@ else
 	echo "#   none yet: src/headers.ts will create it"
 fi
 
-echo; echo "# Zone $ZONE_NAME ($ZONE_ID): redirect ruleset"
-if rs=$(api "/zones/$ZONE_ID/rulesets/phases/http_request_dynamic_redirect/entrypoint" 2>/dev/null); then
-	id=$(echo "$rs" | jq -r '.result.id')
-	echo "#   exists with $(echo "$rs" | jq '.result.rules | length') rule(s): import it before the first \`pulumi up\`"
-	echo "pulumi import cloudflare:index/ruleset:Ruleset redirects 'zones/$ZONE_ID/$id'"
-else
-	echo "#   none yet: src/redirect.ts will create it"
-fi
+REDIRECT_ZONES="${REDIRECT_ZONES:-thijmen.cloud thijmen.dev}"
+for ZONE in $REDIRECT_ZONES; do
+	REDIRECT_ZONE_ID=$(api "/zones?name=$ZONE" | jq -r '.result[0].id')
+	echo; echo "# Zone $ZONE ($REDIRECT_ZONE_ID): redirect ruleset"
+	if rs=$(api "/zones/$REDIRECT_ZONE_ID/rulesets/phases/http_request_dynamic_redirect/entrypoint" 2>/dev/null); then
+		id=$(echo "$rs" | jq -r '.result.id')
+		echo "#   exists with $(echo "$rs" | jq '.result.rules | length') rule(s): import it before the first \`pulumi up\` (skip if Pulumi already manages it)"
+		echo "pulumi import cloudflare:index/ruleset:Ruleset redirects-$(echo "$ZONE" | slug) 'zones/$REDIRECT_ZONE_ID/$id'"
+	else
+		echo "#   none yet: src/redirect.ts will create it"
+	fi
+done
 
 WAF_ZONES="${WAF_ZONES:-cloudcrafter.app filamentradar.app thijmen.cloud thijmen.dev thijmen.nu thijmenstavenuiter.nl whisperingwings.gg}"
 for ZONE in $WAF_ZONES; do

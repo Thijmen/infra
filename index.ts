@@ -15,7 +15,14 @@ const zone = cloudflare.getZoneOutput({ filter: { name: config.require("zone") }
 
 const mcp = emdashMcpAccess({ accountId, siteHost });
 securityHeaders({ zoneId: zone.zoneId, siteHost });
-apexRedirect({ zoneId: zone.zoneId, siteHost });
+
+const apexRedirectHosts = config.requireObject<string[]>("apexRedirectHosts");
+for (const host of apexRedirectHosts) {
+	const redirectZone = cloudflare.getZoneOutput({ filter: { name: host.replace(/^www\./, "") } });
+	// The thijmen.cloud ruleset was first created as "redirects".
+	const aliases = host === siteHost ? ["redirects"] : [];
+	apexRedirect({ zoneId: redirectZone.zoneId, siteHost: host, aliases });
+}
 
 const t3 = t3CodeTunnel({
 	accountId,

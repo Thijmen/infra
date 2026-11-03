@@ -5,6 +5,8 @@ interface Args {
 	zoneId: pulumi.Input<string>;
 	/** Canonical host, e.g. www.thijmen.cloud. */
 	siteHost: string;
+	/** Earlier Pulumi names for this ruleset, so a rename doesn't recreate it. */
+	aliases?: string[];
 }
 
 /**
@@ -18,28 +20,33 @@ interface Args {
  * dashboard), import it first (scripts/discover.sh prints the command) or the
  * create fails.
  */
-export function apexRedirect({ zoneId, siteHost }: Args) {
+export function apexRedirect({ zoneId, siteHost, aliases = [] }: Args) {
 	const apex = siteHost.replace(/^www\./, "");
-	return new cloudflare.Ruleset("redirects", {
-		zoneId,
-		name: "Redirects",
-		description: "Managed by Thijmen/infra",
-		kind: "zone",
-		phase: "http_request_dynamic_redirect",
-		rules: [
-			{
-				ref: "apex_to_www",
-				description: `Redirect ${apex} to ${siteHost}`,
-				expression: `http.host eq "${apex}"`,
-				action: "redirect",
-				actionParameters: {
-					fromValue: {
-						targetUrl: { expression: `concat("https://${siteHost}", http.request.uri.path)` },
-						statusCode: 301,
-						preserveQueryString: true,
+	const name = apex.replace(/[^a-z0-9]+/gi, "-");
+	return new cloudflare.Ruleset(
+		`redirects-${name}`,
+		{
+			zoneId,
+			name: "Redirects",
+			description: "Managed by Thijmen/infra",
+			kind: "zone",
+			phase: "http_request_dynamic_redirect",
+			rules: [
+				{
+					ref: "apex_to_www",
+					description: `Redirect ${apex} to ${siteHost}`,
+					expression: `http.host eq "${apex}"`,
+					action: "redirect",
+					actionParameters: {
+						fromValue: {
+							targetUrl: { expression: `concat("https://${siteHost}", http.request.uri.path)` },
+							statusCode: 301,
+							preserveQueryString: true,
+						},
 					},
 				},
-			},
-		],
-	});
+			],
+		},
+		{ aliases: aliases.map((alias) => ({ name: alias })) },
+	);
 }
